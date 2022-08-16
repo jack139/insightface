@@ -126,6 +126,7 @@ class RetinaFace:
             self._feat_stride_fpn = [8, 16, 32, 64, 128]
             self._num_anchors = 1
             self.use_kps = True
+        print("len(outputs): ", len(outputs))
 
     def prepare(self, ctx_id, **kwargs):
         if ctx_id<0:
@@ -144,12 +145,25 @@ class RetinaFace:
                 self.input_size = input_size
 
     def forward(self, img, threshold):
+        print(img)
+        print(img.shape)
+
         scores_list = []
         bboxes_list = []
         kpss_list = []
         input_size = tuple(img.shape[0:2][::-1])
         blob = cv2.dnn.blobFromImage(img, 1.0/self.input_std, input_size, (self.input_mean, self.input_mean, self.input_mean), swapRB=True)
+        #blob = cv2.dnn.blobFromImage(img, 1.0, input_size, (0, 0, 0), swapRB=True)
+
+        cv2.imwrite('/tmp/test1.jpg', img)
+        print(blob.tolist()[0][0][0][:100])
+        print(blob.shape)
+
         net_outs = self.session.run(self.output_names, {self.input_name : blob})
+
+        #print("net_outs", net_outs)
+        for xxx in range(len(net_outs)):
+            print(xxx, net_outs[xxx].shape, net_outs[xxx][0])
 
         input_height = blob.shape[2]
         input_width = blob.shape[3]
@@ -192,6 +206,7 @@ class RetinaFace:
 
             pos_inds = np.where(scores>=threshold)[0]
             bboxes = distance2bbox(anchor_centers, bbox_preds)
+            #print(anchor_centers.shape, bbox_preds.shape, bboxes.shape)
             pos_scores = scores[pos_inds]
             pos_bboxes = bboxes[pos_inds]
             scores_list.append(pos_scores)
@@ -221,7 +236,11 @@ class RetinaFace:
         det_img = np.zeros( (input_size[1], input_size[0], 3), dtype=np.uint8 )
         det_img[:new_height, :new_width, :] = resized_img
 
+        print(img.shape, new_height, new_width, input_size)
+
         scores_list, bboxes_list, kpss_list = self.forward(det_img, self.det_thresh)
+
+        print(scores_list, bboxes_list)
 
         scores = np.vstack(scores_list)
         scores_ravel = scores.ravel()
@@ -257,7 +276,7 @@ class RetinaFace:
             det = det[bindex, :]
             if kpss is not None:
                 kpss = kpss[bindex, :]
-        return det, kpss
+        return det, kpss, scores_list, bboxes_list
 
     def nms(self, dets):
         thresh = self.nms_thresh

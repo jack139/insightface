@@ -107,3 +107,38 @@ class FaceAnalysis:
             #                       2)
         return dimg
 
+
+
+import base64
+from io import BytesIO
+from datetime import datetime
+import cv2
+import numpy as np
+
+def load_image_to_base64(image_file):
+    with open(image_file, 'rb') as f:
+        image_data = f.read()
+    return base64.b64encode(image_data)
+
+
+def load_image_b64(b64_data, to_rgb=False):
+    data = base64.b64decode(b64_data) # Bytes
+    tmp_buff = BytesIO()
+    tmp_buff.write(data)
+    tmp_buff.seek(0)
+    file_bytes = np.asarray(bytearray(tmp_buff.read()), dtype=np.uint8)
+    img = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
+    if to_rgb:
+        img = img[:,:,::-1]
+    tmp_buff.close()
+    return img
+
+
+'''
+from insightface.app import face_analysis
+app = face_analysis.FaceAnalysis(name="buffalo_l", root='/home/tao/Codes/cv/face_model/arcface/')
+app.prepare(ctx_id=0)
+img64=face_analysis.load_image_to_base64("/home/tao/Codes/DL/source/5.jpg")
+img=face_analysis.load_image_b64(img64)
+app.det_model.detect(img, input_size=(224, 224))
+'''
