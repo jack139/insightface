@@ -138,7 +138,7 @@ def load_image_b64(b64_data, to_rgb=False):
 from insightface.app import face_analysis
 app = face_analysis.FaceAnalysis(name="buffalo_l", root='/home/tao/Codes/cv/face_model/arcface/')
 app.prepare(ctx_id=0)
-img64=face_analysis.load_image_to_base64("/home/tao/Codes/DL/source/5.jpg")
+img64=face_analysis.load_image_to_base64("../../../go/multinfer/misc/data/6.jpg")
 img=face_analysis.load_image_b64(img64)
-app.det_model.detect(img, input_size=(224, 224))
+det, kpss, scores_list, bboxes_list = app.det_model.detect(img, input_size=(224, 224))
 '''

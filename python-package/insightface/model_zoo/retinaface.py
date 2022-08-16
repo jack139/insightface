@@ -145,8 +145,8 @@ class RetinaFace:
                 self.input_size = input_size
 
     def forward(self, img, threshold):
-        print(img)
-        print(img.shape)
+        #print(img)
+        #print(img.shape)
 
         scores_list = []
         bboxes_list = []
@@ -156,8 +156,8 @@ class RetinaFace:
         #blob = cv2.dnn.blobFromImage(img, 1.0, input_size, (0, 0, 0), swapRB=True)
 
         cv2.imwrite('/tmp/test1.jpg', img)
-        print(blob.tolist()[0][0][0][:100])
-        print(blob.shape)
+        #print(blob.tolist()[0][0][0][:100])
+        #print(blob.shape)
 
         net_outs = self.session.run(self.output_names, {self.input_name : blob})
 
@@ -236,11 +236,12 @@ class RetinaFace:
         det_img = np.zeros( (input_size[1], input_size[0], 3), dtype=np.uint8 )
         det_img[:new_height, :new_width, :] = resized_img
 
-        print(img.shape, new_height, new_width, input_size)
+        #print(img.shape, new_height, new_width, input_size)
 
         scores_list, bboxes_list, kpss_list = self.forward(det_img, self.det_thresh)
 
-        print(scores_list, bboxes_list)
+        #print(scores_list, bboxes_list)
+        print("det_scale===", det_scale, float(new_height), img.shape[0])
 
         scores = np.vstack(scores_list)
         scores_ravel = scores.ravel()
@@ -302,6 +303,8 @@ class RetinaFace:
             h = np.maximum(0.0, yy2 - yy1 + 1)
             inter = w * h
             ovr = inter / (areas[i] + areas[order[1:]] - inter)
+
+            print(i, ovr)
 
             inds = np.where(ovr <= thresh)[0]
             order = order[inds + 1]
