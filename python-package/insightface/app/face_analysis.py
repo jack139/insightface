@@ -142,3 +142,14 @@ img64=face_analysis.load_image_to_base64("../../../go/multinfer/misc/data/6.jpg"
 img=face_analysis.load_image_b64(img64)
 det, kpss, scores_list, bboxes_list = app.det_model.detect(img, input_size=(224, 224))
 '''
+
+'''
+import cv2
+from insightface.utils import face_align
+bbox = det[0, 0:4]
+det_score = det[0, 4]
+kps = kpss[0]
+aimg = face_align.norm_crop(img, landmark=kps) # 裁剪和对齐人脸
+cv2.imwrite('/tmp/test_crop1.jpg', aimg)
+embedding = app.models['recognition'].get_feat(aimg).flatten() # 取得特征值
+'''
