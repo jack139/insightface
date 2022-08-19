@@ -277,7 +277,7 @@ class RetinaFace:
             det = det[bindex, :]
             if kpss is not None:
                 kpss = kpss[bindex, :]
-        return det, kpss, scores_list, bboxes_list
+        return det, kpss, scores_list, bboxes_list, kpss_list
 
     def nms(self, dets):
         thresh = self.nms_thresh

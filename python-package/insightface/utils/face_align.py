@@ -54,7 +54,10 @@ def estimate_norm(lmk, image_size=112, mode='arcface'):
     else:
         src = src_map[image_size]
     for i in np.arange(src.shape[0]):
+        print(lmk)
+        print(src[i])
         tform.estimate(lmk, src[i])
+        print(tform.params)
         M = tform.params[0:2, :]
         results = np.dot(M, lmk_tran.T)
         results = results.T
@@ -69,6 +72,7 @@ def estimate_norm(lmk, image_size=112, mode='arcface'):
 
 def norm_crop(img, landmark, image_size=112, mode='arcface'):
     M, pose_index = estimate_norm(landmark, image_size, mode)
+    print(M)
     warped = cv2.warpAffine(img, M, (image_size, image_size), borderValue=0.0)
     return warped
 

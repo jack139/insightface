@@ -140,10 +140,8 @@ app = face_analysis.FaceAnalysis(name="buffalo_l", root='/home/tao/Codes/cv/face
 app.prepare(ctx_id=0)
 img64=face_analysis.load_image_to_base64("../../../go/multinfer/misc/data/6.jpg")
 img=face_analysis.load_image_b64(img64)
-det, kpss, scores_list, bboxes_list = app.det_model.detect(img, input_size=(224, 224))
-'''
+det, kpss, scores_list, bboxes_list, kpss_list = app.det_model.detect(img, input_size=(224, 224))
 
-'''
 import cv2
 from insightface.utils import face_align
 bbox = det[0, 0:4]
@@ -152,4 +150,49 @@ kps = kpss[0]
 aimg = face_align.norm_crop(img, landmark=kps) # 裁剪和对齐人脸
 cv2.imwrite('/tmp/test_crop1.jpg', aimg)
 embedding = app.models['recognition'].get_feat(aimg).flatten() # 取得特征值
+'''
+
+'''
+import cv2
+from insightface.app import face_analysis
+app = face_analysis.FaceAnalysis(name="buffalo_l", root='/home/tao/Codes/cv/face_model/arcface/')
+app.prepare(ctx_id=0)
+
+img = cv2.imread("../../../go/multinfer/misc/data/aimg.jpg", cv2.IMREAD_COLOR)
+embedding = app.models['recognition'].get_feat(img).flatten() # 取得特征值
+'''
+
+'''
+import numpy as np
+
+a1 = a.split()
+a2=[float(i) for i in a1] 
+b = np.float32(a2)
+np.linalg.norm(embedding - b)
+'''
+
+'''
+import numpy as np
+import cv2
+from skimage import transform as trans
+
+dst = np.float32([[218.78867, 205.74413],
+ [312.13818, 202.18082],
+ [279.89087, 232.69415],
+ [236.05072, 302.79538],
+ [313.98624, 299.34445],])
+
+src = np.float32([[38.2946, 51.6963],
+ [73.5318, 51.5014],
+ [56.0252, 71.7366],
+ [41.5493, 92.3655],
+ [70.7299, 92.2041],])
+
+tform = trans.SimilarityTransform()
+tform.estimate(dst, src)
+print(tform.params)
+
+trans.estimate_transform("similarity", dst, src)
+
+cv2.estimateAffinePartial2D(dst, src, method=cv2.LMEDS)  ### 替代 SimilarityTransform
 '''

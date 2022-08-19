@@ -78,9 +78,13 @@ class ArcFaceONNX:
         if not isinstance(imgs, list):
             imgs = [imgs]
         input_size = self.input_size
-        
+        print(imgs)
+        #print(imgs[0].shape)
+        print(input_size, self.input_std, self.input_mean)
         blob = cv2.dnn.blobFromImages(imgs, 1.0 / self.input_std, input_size,
                                       (self.input_mean, self.input_mean, self.input_mean), swapRB=True)
+        print(blob.tolist()[0][0][0][:100])
+        print(blob.shape)
         net_out = self.session.run(self.output_names, {self.input_name: blob})[0]
         return net_out
 
